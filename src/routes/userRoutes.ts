@@ -1,6 +1,5 @@
 import express, { Request, Response, NextFunction } from "express";
-import { register, login } from "../controllers/userController.js";
-import isAdmin from "../middlewares/isAdmin.js";
+import { register, login } from "../controllers/userController";
 const router = express.Router();
 
 router.post("/", register);

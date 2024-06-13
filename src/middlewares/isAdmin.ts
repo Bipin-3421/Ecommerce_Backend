@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { User } from "../models/user.js";
-import ErrorHandler from "../utils/error-utility-class.js";
-
+import { IUser, User } from "../models/user";
+import ErrorHandler from "../utils/error-utility-class";
 const isAdmin = (req: Request, res: Response, next: NextFunction) => {
   if (!req.user) {
     return next(new ErrorHandler("Unauthorized", 401));

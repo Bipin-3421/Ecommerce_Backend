@@ -1,9 +1,9 @@
 import express, { Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
-import { User } from "../models/user.js";
+import { User } from "../models/user";
 import jwt from "jsonwebtoken";
-import ErrorHandler from "../utils/error-utility-class.js";
-import { sendCookie } from "../utils/features.js";
+import ErrorHandler from "../utils/error-utility-class";
+import { sendCookie } from "../utils/features";
 
 export const register = async (
   req: Request,
@@ -19,16 +19,7 @@ export const register = async (
       password: hashedPassword,
     });
     const token = jwt.sign({ _id: user._id }, process.env.jwt as string);
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      maxAge: 15 * 60 * 1000,
-    });
-    res.status(201).json({
-      success: true,
-      message: "Registered Successfully",
-      token,
-    });
+    sendCookie(user, res, `${user.name} created successfully` as string, 200);
   } catch (err) {
     next(err);
   }
@@ -42,12 +33,12 @@ export const login = async (
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).select("+password");
-    if (!user) return next(new ErrorHandler("user not found", 404));
+    if (!user) return next(new ErrorHandler("no user found", 404));
     const isUserMatch = await bcrypt.compare(password, user.password);
     if (!isUserMatch)
-      return next(new ErrorHandler("Incorrect Credentials", 404));
+      next(new ErrorHandler("user credentials not matched", 404));
     const token = jwt.sign({ _id: user._id }, process.env.jwt as string);
-    sendCookie(user, res, `Welcome back, ${user.name}`, 200);
+    sendCookie(user, res, `Welcome back, ${user.name}` as string, 200);
   } catch (err) {
     next(err);
   }
