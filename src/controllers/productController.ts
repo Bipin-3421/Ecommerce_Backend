@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import Product from "../models/product.js";
+import Product from "../models/product";
+import ErrorHandler from "../utils/error-utility-class";
 
 export const addProducts = async (
   req: Request,
@@ -7,13 +8,15 @@ export const addProducts = async (
   next: NextFunction
 ) => {
   try {
-    const { name, description, price, category, imageUrl } = req.body;
+    const { name, description, price, category } = req.body;
+    const image = req.file;
     const product = await Product.create({
       name,
       description,
       price,
       category,
-      imageUrl,
+      image: image?.path,
+      user: req.user?.id,
     });
     res.status(201).json({
       success: true,
@@ -21,18 +24,19 @@ export const addProducts = async (
       product,
     });
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };
 
-export const getProducts = async (req: Request, res: Response) => {
+export const getProducts = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const product = await Product.find({});
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-      });
-    }
+    if (product.length == 0)
+      return next(new ErrorHandler("No product found ", 404));
     res.status(200).json({
       success: true,
       message: "The product is fetched Properly",
@@ -45,7 +49,8 @@ export const getProducts = async (req: Request, res: Response) => {
 
 export const editProducts = async (req: Request, res: Response) => {
   try {
-    const { name, description, price, category, imageUrl } = req.body;
+    const { name, description, price, category } = req.body;
+    const image = req.file;
     const { id } = req.params;
     const product = await Product.findByIdAndUpdate(
       id,
@@ -54,7 +59,7 @@ export const editProducts = async (req: Request, res: Response) => {
         description,
         price,
         category,
-        imageUrl,
+        image: image?.path,
       },
       { new: true }
     );

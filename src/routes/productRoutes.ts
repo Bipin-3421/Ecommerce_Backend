@@ -4,16 +4,18 @@ import {
   getProducts,
   editProducts,
   deleteProducts,
-} from "../controllers/productController.js";
-import isAdmin from "../middlewares/isAdmin.js";
+} from "../controllers/productController";
+import isAdmin from "../middlewares/isAdmin";
+import authMiddleware from "../middlewares/authMiddleware";
+import { singleUpload } from "../middlewares/multer";
 
 const router = express.Router();
 
-router.post("/", isAdmin, addProducts);
+router.post("/", authMiddleware, isAdmin, singleUpload, addProducts);
 
-router.get("/all", getProducts);
+router.get("/", getProducts);
 
-router.put("/edit/:id", editProducts);
+router.put("/:id", editProducts);
 
 router.delete("/:id", deleteProducts);
 

@@ -1,6 +1,12 @@
 import jwt from "jsonwebtoken";
 import { Response } from "express";
-export const sendCookie = (user, res: Response, message, statusCode) => {
+import { IUser } from "../models/user";
+export const sendCookie = (
+  user: IUser,
+  res: Response,
+  message: string,
+  statusCode: number
+) => {
   const token = jwt.sign({ _id: user._id }, process.env.jwt as string);
   res
     .status(statusCode)
@@ -13,5 +19,6 @@ export const sendCookie = (user, res: Response, message, statusCode) => {
     .json({
       success: true,
       message,
+      token,
     });
 };

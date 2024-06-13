@@ -1,21 +1,8 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import ErrorHandler from "../utils/error-utility-class.js";
-import { IUser, User } from "../models/user.js";
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        id: string;
-        role: string;
-        name: string;
-        email: string;
-        password: string;
-      };
-    }
-  }
-}
+import ErrorHandler from "../utils/error-utility-class";
+import { IUser, User } from "../models/user";
+import mongoose from "mongoose";
 
 const authMiddleware = async (
   req: Request,
@@ -31,17 +18,19 @@ const authMiddleware = async (
     // handling type
     if (typeof decoded === "string") return;
     const user: IUser | null = await User.findById(decoded._id);
+
     if (!user) return next(new ErrorHandler("User not found", 404));
-    const userId = user._id.toString();
     req.user = {
-      id: userId,
+      id: user?._id,
       role: user?.role,
       name: user?.name,
       email: user?.email,
-      password: (user as IUser).password,
+      password: user?.password,
     };
     next();
   } catch (err) {
     next(err);
   }
 };
+
+export default authMiddleware;
