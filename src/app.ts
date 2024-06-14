@@ -13,7 +13,7 @@ app.use(cookieParser());
 app.use("/api/products", productRoutes);
 app.use("/api/users", userRoutes);
 app.use(errorMiddleware);
-
+// good
 app.use(function (
   error: unknown,
   req: Request,

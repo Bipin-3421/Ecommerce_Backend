@@ -15,10 +15,8 @@ const authMiddleware = async (
       next(new ErrorHandler("User is not Authenticated", 404));
     }
     const decoded = jwt.verify(token, process.env.jwt as string);
-    // handling type
     if (typeof decoded === "string") return;
     const user: IUser | null = await User.findById(decoded._id);
-
     if (!user) return next(new ErrorHandler("User not found", 404));
     req.user = {
       id: user?._id,
