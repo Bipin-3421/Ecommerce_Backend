@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import AuthSerice from "../services/auth.service";
+import productService from "../services/product.service";
 
 export const login = async (
   req: Request,

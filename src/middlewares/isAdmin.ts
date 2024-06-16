@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import { IUser, User } from "../models/user";
 import ErrorHandler from "../utils/error-utility-class";
 const isAdmin = (req: Request, res: Response, next: NextFunction) => {
   if (!req.user) {

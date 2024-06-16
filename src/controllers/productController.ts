@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
+import productService from "../services/product.service";
 import Product from "../models/product";
 import ErrorHandler from "../utils/error-utility-class";
-
 export const addProducts = async (
   req: Request,
   res: Response,
@@ -9,20 +9,15 @@ export const addProducts = async (
 ) => {
   try {
     const { name, description, price, category } = req.body;
-    const image = req.file;
-    const product = await Product.create({
+    await productService.addProductService(
       name,
       description,
       price,
       category,
-      image: image?.path,
-      user: req.user?.id,
-    });
-    res.status(201).json({
-      success: true,
-      message: "Product added Successfully",
-      product,
-    });
+      next,
+      req,
+      res
+    );
   } catch (err) {
     next(err);
   }
@@ -34,68 +29,41 @@ export const getProducts = async (
   next: NextFunction
 ) => {
   try {
-    const product = await Product.find({});
-    if (product.length == 0)
-      return next(new ErrorHandler("No product found ", 404));
-    res.status(200).json({
-      success: true,
-      message: "The product is fetched Properly",
-      product,
-    });
+    await productService.getProductService(next, res);
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };
 
-export const editProducts = async (req: Request, res: Response) => {
+export const editProducts = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { name, description, price, category } = req.body;
-    const image = req.file;
-    const { id } = req.params;
-    const product = await Product.findByIdAndUpdate(
-      id,
-      {
-        name,
-        description,
-        price,
-        category,
-        image: image?.path,
-      },
-      { new: true }
+    await productService.editProductService(
+      name,
+      description,
+      price,
+      category,
+      next,
+      req,
+      res
     );
-
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: "no product",
-      });
-    }
-
-    res.status(201).json({
-      success: true,
-      message: "product Edited Successfully",
-      product,
-    });
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };
 
-export const deleteProducts = async (req: Request, res: Response) => {
+export const deleteProducts = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const { id } = req.params;
-    const product = await Product.findByIdAndDelete(id);
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: "Product doesn't exists",
-      });
-    }
-    res.status(200).json({
-      success: true,
-      message: "Product Deleted Successfully",
-    });
+    await productService.deleteProductService(req, res, next);
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };

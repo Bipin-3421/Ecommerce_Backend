@@ -13,16 +13,6 @@ app.use(cookieParser());
 app.use("/api/products", productRoutes);
 app.use("/api/users", userRoutes);
 app.use(errorMiddleware);
-// good
-app.use(function (
-  error: unknown,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  if (error) {
-    return res.status(500).end();
-  } else {
-    return next();
-  }
+app.get("/", (req: Request, res: Response) => {
+  res.send("Server is working fine");
 });
