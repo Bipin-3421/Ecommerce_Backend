@@ -15,8 +15,8 @@ router.post("/", authMiddleware, isAdmin, singleUpload, addProducts);
 
 router.get("/", getProducts);
 
-router.put("/:id", editProducts);
+router.put("/:id", authMiddleware, isAdmin, singleUpload, editProducts);
 
-router.delete("/:id", deleteProducts);
+router.delete("/:id", authMiddleware, isAdmin, deleteProducts);
 
 export default router;

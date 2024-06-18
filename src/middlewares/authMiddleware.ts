@@ -2,7 +2,6 @@ import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import ErrorHandler from "../utils/error-utility-class";
 import { IUser, User } from "../models/user";
-import mongoose from "mongoose";
 
 const authMiddleware = async (
   req: Request,

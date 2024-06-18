@@ -12,5 +12,15 @@ declare global {
         password: string;
       };
     }
+    interface Request {
+      product?: {
+        id: mongoose.Types.ObjectId;
+        name: string;
+        description: string;
+        price: number;
+        category: string;
+        image: Express.Multer.File;
+      };
+    }
   }
 }

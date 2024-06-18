@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import productService from "../services/product.service";
-import Product from "../models/product";
+import { IProduct } from "../models/product";
 import ErrorHandler from "../utils/error-utility-class";
 export const addProducts = async (
   req: Request,
@@ -9,15 +9,20 @@ export const addProducts = async (
 ) => {
   try {
     const { name, description, price, category } = req.body;
-    await productService.addProductService(
+    const image = req.file;
+    if (!image) return next(new ErrorHandler("no image found", 404));
+    const product: IProduct = await productService.addProductService(
       name,
       description,
       price,
       category,
-      next,
-      req,
-      res
+      image
     );
+    res.status(201).json({
+      success: true,
+      message: "Product added Successfully",
+      product,
+    });
   } catch (err) {
     next(err);
   }
@@ -29,7 +34,12 @@ export const getProducts = async (
   next: NextFunction
 ) => {
   try {
-    await productService.getProductService(next, res);
+    const product = await productService.getProductService();
+    res.status(200).json({
+      success: true,
+      message: "The product is fetched Properly",
+      product,
+    });
   } catch (err) {
     next(err);
   }
@@ -42,15 +52,22 @@ export const editProducts = async (
 ) => {
   try {
     const { name, description, price, category } = req.body;
-    await productService.editProductService(
+    const image = req.file;
+    const { id } = req.params;
+
+    const updatedProduct = await productService.editProductService(
+      id,
       name,
       description,
       price,
       category,
-      next,
-      req,
-      res
+      image as Express.Multer.File
     );
+    res.status(201).json({
+      success: true,
+      message: "product updated successfully",
+      updatedProduct,
+    });
   } catch (err) {
     next(err);
   }
@@ -62,7 +79,16 @@ export const deleteProducts = async (
   next: NextFunction
 ) => {
   try {
-    await productService.deleteProductService(req, res, next);
+    const { id } = req.params;
+    const product = await productService.deleteProductService(id);
+    if (!product) {
+      return next(new ErrorHandler("No product Found", 404));
+    }
+    res.status(200).json({
+      success: true,
+      message: "Product with name:${product.name}  Deleted Successfully",
+      product,
+    });
   } catch (err) {
     next(err);
   }

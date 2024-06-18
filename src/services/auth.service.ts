@@ -13,8 +13,6 @@ class AuthService {
   ): Promise<void> {
     try {
       const user = await User.findOne({ email }).select("password");
-      console.log(user);
-
       if (!user) return next(new ErrorHandler("no user found ", 404));
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) return next(new ErrorHandler("password not matched", 400));

@@ -1,52 +1,37 @@
 import { NextFunction, Request, Response } from "express";
-import Product from "../models/product";
+import Product, { IProduct } from "../models/product";
 import ErrorHandler from "../utils/error-utility-class";
-
+import mongoose from "mongoose";
 class ProductService {
-  constructor() {
-    console.log("product service constructed");
-  }
-
   async addProductService(
     name: string,
     description: string,
     price: number,
     category: string,
-    next: NextFunction,
-    req: Request,
-    res: Response
-  ): Promise<void> {
+    image: Express.Multer.File
+  ): Promise<IProduct> {
     try {
-      const image = req.file;
       const product = await Product.create({
         name,
         description,
         price,
         category,
         image: image?.path,
-        user: req.user?.id,
       });
-      res.status(201).json({
-        success: true,
-        message: "Product added Successfully",
-        product,
-      });
+      return product;
     } catch (err) {
-      next(err);
+      throw new ErrorHandler(`Error creating Product: ${err}`, 500);
     }
   }
   async editProductService(
+    id: string,
     name: string,
     description: string,
     price: number,
     category: string,
-    next: NextFunction,
-    req: Request,
-    res: Response
-  ): Promise<any> {
+    image: Express.Multer.File
+  ): Promise<IProduct> {
     try {
-      const image = req.file;
-      const { id } = req.params;
       const product = await Product.findByIdAndUpdate(
         id,
         {
@@ -56,50 +41,34 @@ class ProductService {
           category,
           image: image?.path,
         },
-        { new: true }
+        {
+          new: true,
+        }
       );
-      if (!product) {
-        return next(new ErrorHandler("No product found", 404));
-      }
-      res.status(201).json({
-        success: true,
-        message: "product Edited Successfully",
-        product,
-      });
+      if (!product) throw new ErrorHandler("No product Found", 404);
+      return product;
     } catch (err) {
-      next(err);
+      throw new ErrorHandler(`Error creating Product: ${err}`, 500);
     }
   }
-  async getProductService(next: NextFunction, res: Response) {
+
+  async getProductService() {
     try {
       const product = await Product.find({});
-      if (product.length == 0)
-        return next(new ErrorHandler("No product found ", 404));
-      res.status(200).json({
-        success: true,
-        message: "The product is fetched Properly",
-        product,
-      });
+      if (product.length === 0) {
+        throw new ErrorHandler("No product found ", 404);
+      }
+      return product;
     } catch (err) {
-      next(err);
+      throw new ErrorHandler("Error fetching Products", 500);
     }
   }
-  async deleteProductService(req: Request, res: Response, next: NextFunction) {
+  async deleteProductService(id: string) {
     try {
-      const { id } = req.params;
       const product = await Product.findByIdAndDelete(id);
-      if (!product) {
-        return res.status(404).json({
-          success: false,
-          message: "Product doesn't exists",
-        });
-      }
-      res.status(200).json({
-        success: true,
-        message: "Product Deleted Successfully",
-      });
+      return product;
     } catch (err) {
-      next(err);
+      throw new ErrorHandler(`Error created ${err}`, 500);
     }
   }
 }
