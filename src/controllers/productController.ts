@@ -81,12 +81,13 @@ export const deleteProducts = async (
   try {
     const { id } = req.params;
     const product = await productService.deleteProductService(id);
+    console.log(product);
     if (!product) {
       return next(new ErrorHandler("No product Found", 404));
     }
     res.status(200).json({
       success: true,
-      message: "Product with name:${product.name}  Deleted Successfully",
+      message: `Product with name:${product.name}deleted Successfully`,
       product,
     });
   } catch (err) {

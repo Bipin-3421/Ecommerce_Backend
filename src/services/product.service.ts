@@ -1,7 +1,6 @@
-import { NextFunction, Request, Response } from "express";
 import Product, { IProduct } from "../models/product";
 import ErrorHandler from "../utils/error-utility-class";
-import mongoose from "mongoose";
+
 class ProductService {
   async addProductService(
     name: string,
@@ -53,19 +52,17 @@ class ProductService {
   }
 
   async getProductService() {
-    try {
-      const product = await Product.find({});
-      if (product.length === 0) {
-        throw new ErrorHandler("No product found ", 404);
-      }
-      return product;
-    } catch (err) {
-      throw new ErrorHandler("Error fetching Products", 500);
+    const product = await Product.find({});
+    if (product.length === 0) {
+      throw new ErrorHandler("No product found bro ", 404);
     }
+    return product;
   }
-  async deleteProductService(id: string) {
+
+  async deleteProductService(id: string): Promise<IProduct> {
     try {
       const product = await Product.findByIdAndDelete(id);
+      if (!product) throw new ErrorHandler("No product found", 404);
       return product;
     } catch (err) {
       throw new ErrorHandler(`Error created ${err}`, 500);
