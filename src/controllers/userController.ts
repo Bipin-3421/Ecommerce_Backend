@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import AuthSerice from "../services/auth.service";
 import productService from "../services/product.service";
+import { RegisterSchemaType } from "validators/authValidator";
 
 export const login = async (
   req: Request,
@@ -16,7 +17,7 @@ export const login = async (
 };
 
 export const register = async (
-  req: Request,
+  req: Request<unknown, unknown, RegisterSchemaType>,
   res: Response,
   next: NextFunction
 ) => {

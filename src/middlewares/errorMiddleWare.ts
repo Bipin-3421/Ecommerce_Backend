@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import ErrorHandler from "../utils/error-utility-class";
+import { z } from "zod";
 
 const errorMiddleware = (
   err: ErrorHandler,
@@ -9,6 +10,12 @@ const errorMiddleware = (
 ) => {
   err.statusCode ||= 500;
   err.message ||= "Internal Server Error";
+
+  if (err instanceof z.ZodError) {
+    return res
+      .status(400)
+      .json({ message: "Input validation failed", errors: err.errors });
+  }
 
   return res
     .status(err.statusCode)
