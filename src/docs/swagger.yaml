@@ -5,10 +5,36 @@ info:
   version: 1.0.0
 servers:
   - url: http://localhost:3001
+
+components:
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    product:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: integer
+          format: int64
+        category:
+          type: string
+        image:
+          type: string
+      
+
 paths:
   /api/products/:
     get:
       summary: Get all products
+      security:
+        - JWT: []  
       tags:
         - Products
       responses:
@@ -18,8 +44,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items:
-                $ref: ""       
+                $ref: "#/components/schemas/product"       
 
     post:
       summary: Create a new product
@@ -29,14 +54,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Post"
+              $ref: "#/components/schemas/product"
       responses:
         "201":
           description: The product is created successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Post"
+                $ref: "#/components/schemas/product"
     put:
       summary: Update a product
       tags:

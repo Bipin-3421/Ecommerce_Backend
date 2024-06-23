@@ -47,14 +47,14 @@ class ProductService {
       if (!product) throw new ErrorHandler("No product Found", 404);
       return product;
     } catch (err) {
-      throw new ErrorHandler(`Error creating Product: ${err}`, 500);
+      throw new ErrorHandler(`Error updating Product: ${err}`, 500);
     }
   }
 
   async getProductService() {
     const product = await Product.find({});
     if (product.length === 0) {
-      throw new ErrorHandler("No product found bro ", 404);
+      throw new ErrorHandler("No product found ", 404);
     }
     return product;
   }

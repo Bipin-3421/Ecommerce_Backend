@@ -1,33 +1,24 @@
 import bcrypt from "bcryptjs";
-import { User } from "../models/user";
-import { Response, NextFunction } from "express";
+import { IUser, User } from "../models/user";
 import ErrorHandler from "../utils/error-utility-class";
-import { sendCookie } from "../utils/cookieHandler";
 
 class AuthService {
-  async loginAuthService(
-    email: string,
-    password: string,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+  async loginAuthService(email: string, password: string): Promise<IUser> {
     try {
       const user = await User.findOne({ email }).select("password");
-      if (!user) return next(new ErrorHandler("no user found ", 404));
+      if (!user) throw new ErrorHandler("no user found ", 404);
       const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) return next(new ErrorHandler("password not matched", 400));
-      sendCookie(user, res, `Welcome back, ${user.name}`, 200);
+      if (!isMatch) throw new ErrorHandler("password not matched", 400);
+      return user;
     } catch (err) {
-      next(err);
+      throw new ErrorHandler("Internal Server Error", 500);
     }
   }
   async registerAuthService(
     name: string,
     email: string,
-    password: string,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+    password: string
+  ): Promise<IUser> {
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = await User.create({
@@ -35,10 +26,17 @@ class AuthService {
         email,
         password: hashedPassword,
       });
-      sendCookie(user, res, `${user.name} created successfully` as string, 201);
+      return user;
     } catch (err) {
-      next(err);
+      throw new ErrorHandler("Internal Server Error", 500);
     }
+  }
+  async getAuthenticatedUsers() {
+    const user = await User.find({});
+    if (user.length == 0) {
+      throw new ErrorHandler("No user found", 404);
+    }
+    return user;
   }
 }
 export default new AuthService();

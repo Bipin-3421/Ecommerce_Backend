@@ -13,9 +13,9 @@ const router = express.Router();
 
 router.post("/", authMiddleware, isAdmin, singleUpload, addProducts);
 
-router.get("/", getProducts);
+router.get("/", authMiddleware, isAdmin, getProducts);
 
-router.put("/:id", authMiddleware, isAdmin, singleUpload, editProducts);
+router.patch("/:id", authMiddleware, isAdmin, singleUpload, editProducts);
 
 router.delete("/:id", authMiddleware, isAdmin, deleteProducts);
 

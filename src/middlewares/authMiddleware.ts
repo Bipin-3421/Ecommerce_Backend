@@ -9,9 +9,13 @@ const authMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    const { token } = req.cookies;
+    let token: string | undefined = "";
+    token = req.cookies.token;
     if (!token) {
-      next(new ErrorHandler("User is not Authenticated", 404));
+      token = req.headers.authorization?.split(" ").pop();
+    }
+    if (!token) {
+      return next(new ErrorHandler("User is not Authenticated", 404));
     }
     const decoded = jwt.verify(token, process.env.jwt as string);
     if (typeof decoded === "string") return;
