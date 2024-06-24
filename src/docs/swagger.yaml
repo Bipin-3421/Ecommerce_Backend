@@ -18,23 +18,24 @@ components:
       properties:
         name:
           type: string
+          example: "sample"
         description:
           type: string
         price:
-          type: integer
-          format: int64
+          type: number
+          format: float
         category:
           type: string
         image:
           type: string
-      
+          format: binary
 
 paths:
   /api/products/:
     get:
       summary: Get all products
       security:
-        - JWT: []  
+        - JWT: []
       tags:
         - Products
       responses:
@@ -44,15 +45,19 @@ paths:
             application/json:
               schema:
                 type: array
-                $ref: "#/components/schemas/product"       
+                $ref: "#/components/schemas/product"
 
     post:
       summary: Create a new product
-       tags:
+      security:
+        - JWT: []
+      tags:
         - Products
       requestBody:
+        description: The product to create
+        required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
               $ref: "#/components/schemas/product"
       responses:
@@ -62,40 +67,46 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/product"
-    put:
+  /api/products/{productId}:            
+    patch:
       summary: Update a product
-      tags:
-        - Products
-      parameters:
-        - name: id
+      security:
+        - JWT: []
+      parameters: 
+        - name: productId
           in: path
+          description: Product to edit
           required: true
           schema:
             type: string
+      tags:
+        - Products
       requestBody:
+        description: The product to update
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Post"
+              $ref: "#/components/schemas/product"
       responses:
         "200":
-          description: The updated blog post
+          description: The updated product
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Post"
+                $ref: "#/components/schemas/product"
         "404":
           description: Post not found
+
     delete:
       summary: Delete a product
+      security:
+        - JWT: []
       tags:
         - Products
-      parameters:
-        - name: id
-          in: path
-          required: true
+      requestBody:
+        description: The prdouct to delete
           schema:
-            type: string
+            $ref: "#/components/schemas/[]"
       responses:
         "200":
           description: Post deleted successfully

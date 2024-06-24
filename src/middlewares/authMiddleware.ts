@@ -11,12 +11,8 @@ const authMiddleware = async (
   try {
     let token: string | undefined = "";
     token = req.cookies.token;
-    if (!token) {
-      token = req.headers.authorization?.split(" ").pop();
-    }
-    if (!token) {
-      return next(new ErrorHandler("User is not Authenticated", 404));
-    }
+    if (!token) token = req.headers.authorization?.split(" ").pop();
+    if (!token) return next(new ErrorHandler("user is not authenticated", 400));
     const decoded = jwt.verify(token, process.env.jwt as string);
     if (typeof decoded === "string") return;
     const user: IUser | null = await User.findById(decoded._id);
