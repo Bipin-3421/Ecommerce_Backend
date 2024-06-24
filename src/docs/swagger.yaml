@@ -18,7 +18,6 @@ components:
       properties:
         name:
           type: string
-          example: "sample"
         description:
           type: string
         price:
@@ -29,6 +28,15 @@ components:
         image:
           type: string
           format: binary
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string      
 
 paths:
   /api/products/:
@@ -101,12 +109,19 @@ paths:
       summary: Delete a product
       security:
         - JWT: []
+      parameters:
+        - name: productId
+          in: path
+          description: Product to edit
+          required: true
+          schema:
+            type: string 
       tags:
         - Products
       requestBody:
         description: The prdouct to delete
           schema:
-            $ref: "#/components/schemas/[]"
+            $ref: "#/components/schemas/product"
       responses:
         "200":
           description: Post deleted successfully
@@ -116,6 +131,8 @@ paths:
   /api/users:
     get:
       summary: Get all users
+      security:
+        - JWT: []
       tags:
         - Users
       responses:
@@ -125,8 +142,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items:
-                  $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/User"
     post:
       summary: Create a new user
       tags:
@@ -138,18 +154,21 @@ paths:
               $ref: "#/components/schemas/User"
       responses:
         "201":
-          description: The created user
+          description: The user is created
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
-  /api/users/{id}:
+                
+  /api/users/{userId}:
     get:
       summary: Get a user by ID
+      security:
+        - JWT: []
       tags:
         - Users
       parameters:
-        - name: id
+        - name: userId
           in: path
           required: true
           schema:
@@ -165,6 +184,8 @@ paths:
           description: User not found
     put:
       summary: Update a user
+      security:
+        - JWT: []
       tags:
         - Users
       parameters:
@@ -189,6 +210,8 @@ paths:
           description: User not found
     delete:
       summary: Delete a user
+      security:
+        - JWT: []
       tags:
         - Users
       parameters:

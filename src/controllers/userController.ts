@@ -3,6 +3,8 @@ import AuthSerice from "../services/auth.service";
 import { RegisterSchemaType } from "../validators/authValidator";
 import { sendCookie } from "../utils/cookieHandler";
 import AuthService from "../services/auth.service";
+import ErrorHandler from "../utils/error-utility-class";
+import { User } from "../models/user";
 
 export const login = async (
   req: Request,
@@ -27,6 +29,26 @@ export const register = async (
     const { name, email, password } = req.body;
     const user = await AuthSerice.registerAuthService(name, email, password);
     sendCookie(user, res, `user.${name} created successfully`, 201);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getSingleUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id);
+    if (!user)
+      return next(new ErrorHandler(`user with the id:${id} not found`, 404));
+    res.status(200).json({
+      success: true,
+      message: "user fetched successfully",
+      user,
+    });
   } catch (err) {
     next(err);
   }
