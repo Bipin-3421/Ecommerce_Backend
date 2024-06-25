@@ -19,7 +19,7 @@ router.get("/", authMiddleware, isAdmin, getProducts);
 
 router.get("/filter", authMiddleware, isAdmin, filterByPriceRange);
 
-router.get("/filter/category", authMiddleware, isAdmin, filterByCategory);
+router.get("/filter/:category", authMiddleware, isAdmin, filterByCategory);
 
 router.patch("/:id", authMiddleware, isAdmin, singleUpload, editProducts);
 

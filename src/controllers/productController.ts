@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from "express";
 import productService from "../services/product.service";
 import Product, { IProduct } from "../models/product";
 import ErrorHandler from "../utils/error-utility-class";
-import { ElementFlags } from "typescript";
 export const addProducts = async (
   req: Request,
   res: Response,
@@ -119,25 +118,13 @@ export const filterByCategory = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const categories = ["dual", "faucet", "test"];
-
-  const selectedCategory = categories.map((category) => {
-    if (category === "dual") {
-      return category;
-    } else if (category === "faucet") {
-      return category;
-    } else if (category === "sanitary") {
-      return category;
-    }
-  });
-
-  const productCategory = await Product.find({
-    category: selectedCategory,
-  });
-
+  const { category } = req.params;
+  let product = await Product.findOne({ category });
+  if (!product) return next(new ErrorHandler("Product not found", 400));
+  const orderedProduct = await Product.find({ category });
   res.status(200).json({
     success: true,
     message: "Product Filtered successfully according to category",
-    productCategory,
+    orderedProduct,
   });
 };
