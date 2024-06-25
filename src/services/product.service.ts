@@ -68,5 +68,16 @@ class ProductService {
       throw new ErrorHandler(`Error created ${err}`, 500);
     }
   }
+
+  async getFilteredProduct(minPrice: number, maxPrice: number) {
+    try {
+      const getFilteredproduct = await Product.find({
+        price: { $gte: minPrice } && { $lte: maxPrice },
+      });
+      return getFilteredproduct;
+    } catch (err) {
+      throw new ErrorHandler("filter error ", 500);
+    }
+  }
 }
 export default new ProductService();

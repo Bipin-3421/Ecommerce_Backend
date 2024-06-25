@@ -4,6 +4,8 @@ import {
   getProducts,
   editProducts,
   deleteProducts,
+  filterByPriceRange,
+  filterByCategory,
 } from "../controllers/productController";
 import isAdmin from "../middlewares/isAdmin";
 import authMiddleware from "../middlewares/authMiddleware";
@@ -14,6 +16,10 @@ const router = express.Router();
 router.post("/", authMiddleware, isAdmin, singleUpload, addProducts);
 
 router.get("/", authMiddleware, isAdmin, getProducts);
+
+router.get("/filter", authMiddleware, isAdmin, filterByPriceRange);
+
+router.get("/filter/category", authMiddleware, isAdmin, filterByCategory);
 
 router.patch("/:id", authMiddleware, isAdmin, singleUpload, editProducts);
 
