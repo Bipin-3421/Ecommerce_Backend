@@ -4,7 +4,6 @@ import { RegisterSchemaType } from "../validators/authValidator";
 import { sendCookie } from "../utils/cookieHandler";
 import AuthService from "../services/auth.service";
 import ErrorHandler from "../utils/error-utility-class";
-import { IUser, User } from "../models/user";
 
 export const login = async (
   req: Request,
@@ -34,6 +33,23 @@ export const register = async (
   }
 };
 
+export const getAllUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const user = await AuthService.getAuthenticatedUsers();
+    res.status(200).json({
+      success: true,
+      message: "Users Fetched Successfully",
+      user,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const getSingleUser = async (
   req: Request,
   res: Response,
@@ -41,7 +57,7 @@ export const getSingleUser = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const user = await User.findById(id);
+    const user = await AuthSerice.getSingleUser(id);
     if (!user)
       return next(new ErrorHandler(`user with the id:${id} not found`, 404));
     res.status(200).json({
@@ -54,17 +70,40 @@ export const getSingleUser = async (
   }
 };
 
-export const getAllUsers = async (
+export const editUser = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
-    const user = await AuthService.getAuthenticatedUsers();
+    const { role } = req.body;
+    const { id } = req.params;
+    const updatedUser = await AuthSerice.updateSingleUser(id, role);
+    if (!updatedUser)
+      return next(new ErrorHandler(`user with the id:${id} not found`, 404));
     res.status(200).json({
       success: true,
-      message: "Users Fetched Successfully",
-      user,
+      message: "user edited successfully",
+      updatedUser,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+export const deleteUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const deletedUser = await AuthSerice.deleteSingleUser(id);
+    if (!deletedUser)
+      return next(new ErrorHandler(`user with the id:${id} not found`, 404));
+    res.status(200).json({
+      success: true,
+      message: `user with id:${id} deleted successfully`,
+      deletedUser,
     });
   } catch (err) {
     next(err);

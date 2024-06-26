@@ -65,7 +65,7 @@ class ProductService {
       if (!product) throw new ErrorHandler("No product found", 404);
       return product;
     } catch (err) {
-      throw new ErrorHandler(`Error created ${err}`, 500);
+      throw new ErrorHandler(`Error created ${err}`, 404);
     }
   }
 
@@ -74,19 +74,24 @@ class ProductService {
       const getFilteredproduct = await Product.find({
         price: { $gte: minPrice } && { $lte: maxPrice },
       });
+      if (getFilteredproduct.length === 0)
+        throw new ErrorHandler(
+          "no product with the filter range available",
+          404
+        );
       return getFilteredproduct;
     } catch (err) {
-      throw new ErrorHandler("filter error ", 500);
+      throw new ErrorHandler(`Error while filtering Products ${err}`, 404);
     }
   }
 
   async getProductByCategory(category: string) {
     try {
       let product = await Product.findOne({ category });
-      if (!product) throw new ErrorHandler("Product not found", 400);
+      if (!product) throw new ErrorHandler("Product not found", 404);
       return product;
     } catch (err) {
-      throw new ErrorHandler(`Err:${err}`, 500);
+      throw new ErrorHandler(`Err:${err}`, 404);
     }
   }
 }

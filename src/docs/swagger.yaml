@@ -46,6 +46,12 @@ components:
         password:
           type: string
 
+    UserRole:
+      type: object
+      properties:
+        role:
+          type: string
+
 paths:
   /api/products/:
     get:
@@ -62,6 +68,8 @@ paths:
               schema:
                 type: array
                 $ref: "#/components/schemas/product"
+        "404":
+          description: Products not found
 
     post:
       summary: Create a new product
@@ -83,6 +91,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/product"
+        "500":
+          description: Internal server error
 
   /api/products/filter/price:
     get:
@@ -93,7 +103,28 @@ paths:
         "200":
           description: The product to filter
         "404":
-          description: Post not found
+          description: Product not found
+
+  /api/products/filter/{productCategory}:
+    get:
+      summary: filtering product by category
+      parameters:
+        - name: productCategory
+          in: path
+          description: Product to categorize
+          required: true
+      tags:
+        - Products
+      responses:
+        "200":
+          description: list of categorized products
+          content:
+            application/json:
+              schema:
+                type: array
+                $ref: "#/components/schemas/product"
+        "404":
+          description: Product not found
 
   /api/products/{productId}:
     patch:
@@ -123,7 +154,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/product"
         "404":
-          description: Post not found
+          description: Product not found
 
     delete:
       summary: Delete a product
@@ -145,25 +176,6 @@ paths:
         "404":
           description: product not found
 
-  /api/products/filter/{productCategory}:
-    get:
-      summary: filtering product by category
-      parameters:
-        - name: productCategory
-          in: path
-          description: Product to categorize
-          required: true
-      tags:
-        - Products
-      responses:
-        "200":
-          description: list of categorized products
-          content:
-            application/json:
-              schema:
-                type: array
-                $ref: "#/components/schemas/product"
-
   /api/users:
     get:
       summary: Get all users
@@ -179,6 +191,8 @@ paths:
               schema:
                 type: array
                 $ref: "#/components/schemas/User"
+        "404":
+          description: No users found
 
     post:
       summary: Create a new user
@@ -241,14 +255,14 @@ paths:
                 $ref: "#/components/schemas/User"
         "404":
           description: User not found
-    put:
+    patch:
       summary: Update a user
       security:
         - JWT: []
       tags:
         - Users
       parameters:
-        - name: id
+        - name: userId
           in: path
           required: true
           schema:
@@ -257,14 +271,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/User"
+              $ref: "#/components/schemas/UserRole"
       responses:
         "200":
           description: The updated user
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/UserRole"
         "404":
           description: User not found
     delete:
@@ -274,7 +288,7 @@ paths:
       tags:
         - Users
       parameters:
-        - name: id
+        - name: userId
           in: path
           required: true
           schema:

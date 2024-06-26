@@ -1,7 +1,6 @@
 import bcrypt from "bcryptjs";
 import { IUser, User } from "../models/user";
 import ErrorHandler from "../utils/error-utility-class";
-import { response } from "express";
 
 class AuthService {
   async loginAuthService(email: string, password: string): Promise<IUser> {
@@ -32,7 +31,8 @@ class AuthService {
       throw new ErrorHandler("Internal Server Error", 500);
     }
   }
-  async getAuthenticatedUsers() {
+
+  async getAuthenticatedUsers(): Promise<IUser[]> {
     try {
       const user = await User.find({});
       if (user.length == 0) {
@@ -41,6 +41,42 @@ class AuthService {
       return user;
     } catch (err) {
       throw new ErrorHandler(`err:${err}`, 500);
+    }
+  }
+
+  async getSingleUser(id: string): Promise<IUser> {
+    try {
+      const user = await User.findById(id);
+      if (!user)
+        throw new ErrorHandler(`user with the id:${id} not found`, 404);
+      return user;
+    } catch (err) {
+      throw new ErrorHandler(`err:${err}`, 500);
+    }
+  }
+
+  async updateSingleUser(id: string, role: string): Promise<IUser> {
+    try {
+      const user = await User.findByIdAndUpdate(
+        id,
+        {
+          role,
+        },
+        { new: true }
+      );
+      if (!user) throw new ErrorHandler(`user with the ${id} not found`, 404);
+      return user;
+    } catch (err) {
+      throw new ErrorHandler(`err: ${err}`, 500);
+    }
+  }
+  async deleteSingleUser(id: string): Promise<IUser> {
+    try {
+      const user = await User.findByIdAndDelete(id);
+      if (!user) throw new ErrorHandler(`user with the ${id} not found`, 404);
+      return user;
+    } catch (err) {
+      throw new ErrorHandler(`err: ${err}`, 500);
     }
   }
 }

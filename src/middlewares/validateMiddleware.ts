@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { ZodError, z } from "zod";
+import { z } from "zod";
 
 const validateBody =
   (schema: z.ZodObject<any, any>) =>

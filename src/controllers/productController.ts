@@ -1,16 +1,17 @@
 import { Request, Response, NextFunction } from "express";
 import productService from "../services/product.service";
-import Product, { IProduct } from "../models/product";
+import { IProduct } from "../models/product";
 import ErrorHandler from "../utils/error-utility-class";
 export const addProducts = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const { name, description, price, category } = req.body;
     const image = req.file;
-    if (!image) return next(new ErrorHandler("no image found", 404));
+    if (!name || !description || !price || !category || !image)
+      throw new ErrorHandler("Please Enter all the fields", 400);
     const product: IProduct = await productService.addProductService(
       name,
       description,
@@ -32,7 +33,7 @@ export const getProducts = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const product = await productService.getProductService();
     res.status(200).json({
@@ -49,12 +50,11 @@ export const editProducts = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
+    const { id } = req.params;
     const { name, description, price, category } = req.body;
     const image = req.file;
-    const { id } = req.params;
-
     const updatedProduct = await productService.editProductService(
       id,
       name,
@@ -77,14 +77,10 @@ export const deleteProducts = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const { id } = req.params;
     const product = await productService.deleteProductService(id);
-    console.log(product);
-    if (!product) {
-      return next(new ErrorHandler("No product Found", 404));
-    }
     res.status(200).json({
       success: true,
       message: `Product with name:${product.name}deleted Successfully`,
