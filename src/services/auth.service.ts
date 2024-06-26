@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { IUser, User } from "../models/user";
 import ErrorHandler from "../utils/error-utility-class";
+import { response } from "express";
 
 class AuthService {
   async loginAuthService(email: string, password: string): Promise<IUser> {
@@ -11,7 +12,7 @@ class AuthService {
       if (!isMatch) throw new ErrorHandler("password not matched", 400);
       return user;
     } catch (err) {
-      throw new ErrorHandler("Internal Server Error", 500);
+      throw new ErrorHandler(`err:${err}`, 500);
     }
   }
   async registerAuthService(
@@ -32,11 +33,15 @@ class AuthService {
     }
   }
   async getAuthenticatedUsers() {
-    const user = await User.find({});
-    if (user.length == 0) {
-      throw new ErrorHandler("No user found", 404);
+    try {
+      const user = await User.find({});
+      if (user.length == 0) {
+        throw new ErrorHandler("No user found", 404);
+      }
+      return user;
+    } catch (err) {
+      throw new ErrorHandler(`err:${err}`, 500);
     }
-    return user;
   }
 }
 export default new AuthService();

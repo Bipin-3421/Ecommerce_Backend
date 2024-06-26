@@ -100,17 +100,21 @@ export const filterByPriceRange = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const minPrice: number = 1000;
-  const maxPrice: number = 4000;
-  const filteredProduct = await productService.getFilteredProduct(
-    minPrice,
-    maxPrice
-  );
-  res.status(200).json({
-    success: true,
-    message: "Product with the following price range filtered properly",
-    filteredProduct,
-  });
+  try {
+    const minPrice: number = 1000;
+    const maxPrice: number = 4000;
+    const filteredProduct = await productService.getProductByPrice(
+      minPrice,
+      maxPrice
+    );
+    res.status(200).json({
+      success: true,
+      message: "Product with the following price range filtered properly",
+      filteredProduct,
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 export const filterByCategory = async (
@@ -118,13 +122,15 @@ export const filterByCategory = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const { category } = req.params;
-  let product = await Product.findOne({ category });
-  if (!product) return next(new ErrorHandler("Product not found", 400));
-  const orderedProduct = await Product.find({ category });
-  res.status(200).json({
-    success: true,
-    message: "Product Filtered successfully according to category",
-    orderedProduct,
-  });
+  try {
+    const { category } = req.params;
+    const product = await productService.getProductByCategory(category);
+    res.status(200).json({
+      success: true,
+      message: "Product Filtered successfully according to category",
+      product,
+    });
+  } catch (err) {
+    next(err);
+  }
 };

@@ -4,13 +4,13 @@ import { RegisterSchemaType } from "../validators/authValidator";
 import { sendCookie } from "../utils/cookieHandler";
 import AuthService from "../services/auth.service";
 import ErrorHandler from "../utils/error-utility-class";
-import { User } from "../models/user";
+import { IUser, User } from "../models/user";
 
 export const login = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const { email, password } = req.body;
     const user = await AuthSerice.loginAuthService(email, password);
@@ -24,7 +24,7 @@ export const register = async (
   req: Request<unknown, unknown, RegisterSchemaType>,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const { name, email, password } = req.body;
     const user = await AuthSerice.registerAuthService(name, email, password);
@@ -38,7 +38,7 @@ export const getSingleUser = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const { id } = req.params;
     const user = await User.findById(id);
@@ -58,7 +58,7 @@ export const getAllUsers = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const user = await AuthService.getAuthenticatedUsers();
     res.status(200).json({

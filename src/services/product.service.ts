@@ -69,7 +69,7 @@ class ProductService {
     }
   }
 
-  async getFilteredProduct(minPrice: number, maxPrice: number) {
+  async getProductByPrice(minPrice: number, maxPrice: number) {
     try {
       const getFilteredproduct = await Product.find({
         price: { $gte: minPrice } && { $lte: maxPrice },
@@ -77,6 +77,16 @@ class ProductService {
       return getFilteredproduct;
     } catch (err) {
       throw new ErrorHandler("filter error ", 500);
+    }
+  }
+
+  async getProductByCategory(category: string) {
+    try {
+      let product = await Product.findOne({ category });
+      if (!product) throw new ErrorHandler("Product not found", 400);
+      return product;
+    } catch (err) {
+      throw new ErrorHandler(`Err:${err}`, 500);
     }
   }
 }
