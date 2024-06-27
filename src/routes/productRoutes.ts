@@ -6,6 +6,7 @@ import {
   deleteProducts,
   filterByPriceRange,
   filterByCategory,
+  totalProduct,
 } from "../controllers/productController";
 import isAdmin from "../middlewares/isAdmin";
 import authMiddleware from "../middlewares/authMiddleware";
@@ -18,6 +19,8 @@ router.post("/", authMiddleware, isAdmin, singleUpload, addProducts);
 router.get("/", authMiddleware, isAdmin, singleUpload, getProducts);
 
 router.get("/filter/price", filterByPriceRange);
+
+router.get("/admin/totalProduct", totalProduct);
 
 router.get("/filter/:category", filterByCategory);
 

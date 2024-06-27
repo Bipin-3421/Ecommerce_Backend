@@ -6,6 +6,7 @@ import errorMiddleware from "./middlewares/errorMiddleWare";
 import path from "path";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
+
 export const app = express();
 
 // using middlewares

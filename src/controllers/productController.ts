@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import productService from "../services/product.service";
-import { IProduct } from "../models/product";
+import Product, { IProduct } from "../models/product";
 import ErrorHandler from "../utils/error-utility-class";
 export const addProducts = async (
   req: Request,
@@ -125,6 +125,27 @@ export const filterByCategory = async (
       success: true,
       message: "Product Filtered successfully according to category",
       product,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const totalProduct = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const totalProduct = await Product.aggregate([
+      {
+        $count: "total",
+      },
+    ]);
+    const total = totalProduct.length > 0 ? totalProduct[0].total : 0;
+    res.status(200).json({
+      success: true,
+      totalProducts: total,
     });
   } catch (err) {
     next(err);
