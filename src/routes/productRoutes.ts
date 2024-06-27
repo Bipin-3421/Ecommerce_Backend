@@ -7,6 +7,7 @@ import {
   filterByPriceRange,
   filterByCategory,
   totalProduct,
+  productStockByCategory,
 } from "../controllers/productController";
 import isAdmin from "../middlewares/isAdmin";
 import authMiddleware from "../middlewares/authMiddleware";
@@ -20,7 +21,14 @@ router.get("/", authMiddleware, isAdmin, singleUpload, getProducts);
 
 router.get("/filter/price", filterByPriceRange);
 
-router.get("/admin/totalProduct", totalProduct);
+router.get("/admin/totalProduct", authMiddleware, isAdmin, totalProduct);
+
+router.get(
+  "/admin/product/stock",
+  authMiddleware,
+  isAdmin,
+  productStockByCategory
+);
 
 router.get("/filter/:category", filterByCategory);
 

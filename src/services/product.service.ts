@@ -7,7 +7,8 @@ class ProductService {
     description: string,
     price: number,
     category: string,
-    image: Express.Multer.File
+    image: Express.Multer.File,
+    stock: number
   ): Promise<IProduct> {
     try {
       const product = await Product.create({
@@ -16,6 +17,7 @@ class ProductService {
         price,
         category,
         image: image?.path,
+        stock,
       });
       return product;
     } catch (err) {
@@ -85,11 +87,44 @@ class ProductService {
     }
   }
 
-  async getProductByCategory(category: string) {
+  async getProductByCategory(category: string): Promise<IProduct> {
     try {
       let product = await Product.findOne({ category });
       if (!product) throw new ErrorHandler("Product not found", 404);
       return product;
+    } catch (err) {
+      throw new ErrorHandler(`Err:${err}`, 404);
+    }
+  }
+
+  async getTotalProduct(): Promise<number> {
+    try {
+      const totalProduct = await Product.aggregate([
+        {
+          $count: "total",
+        },
+      ]);
+      if (!totalProduct) throw new ErrorHandler("Product not found", 404);
+      const total = totalProduct.length > 0 ? totalProduct[0] : 0;
+      return total;
+    } catch (err) {
+      throw new ErrorHandler(`Err:${err}`, 404);
+    }
+  }
+  async getProductStock(): Promise<IProduct> {
+    try {
+      const productStock = await Product.aggregate([
+        {
+          $group: {
+            _id: "$category",
+            stock: {
+              $sum: "$stock",
+            },
+          },
+        },
+      ]);
+      if (!productStock) throw new ErrorHandler("Product not found", 404);
+      return productStock;
     } catch (err) {
       throw new ErrorHandler(`Err:${err}`, 404);
     }

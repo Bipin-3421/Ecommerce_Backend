@@ -2,22 +2,25 @@ import { Request, Response, NextFunction } from "express";
 import productService from "../services/product.service";
 import Product, { IProduct } from "../models/product";
 import ErrorHandler from "../utils/error-utility-class";
+import { TotalProductResponse } from "types/product.response";
+
 export const addProducts = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { name, description, price, category } = req.body;
+    const { name, description, price, category, stock } = req.body;
     const image = req.file;
-    if (!name || !description || !price || !category || !image)
+    if (!name || !description || !price || !category || !image || !stock)
       throw new ErrorHandler("Please Enter all the fields", 400);
     const product: IProduct = await productService.addProductService(
       name,
       description,
       price,
       category,
-      image
+      image,
+      stock
     );
     res.status(201).json({
       success: true,
@@ -114,7 +117,7 @@ export const filterByPriceRange = async (
 };
 
 export const filterByCategory = async (
-  req: Request,
+  req: Request<{ category: string }>,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -133,19 +136,30 @@ export const filterByCategory = async (
 
 export const totalProduct = async (
   req: Request,
-  res: Response,
+  res: TotalProductResponse,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
-    const totalProduct = await Product.aggregate([
-      {
-        $count: "total",
-      },
-    ]);
-    const total = totalProduct.length > 0 ? totalProduct[0].total : 0;
+    const totalProduct = await productService.getTotalProduct();
     res.status(200).json({
       success: true,
-      totalProducts: total,
+      totalProduct,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const productStockByCategory = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const productStock = await productService.getProductStock();
+    res.status(200).json({
+      success: true,
+      productStock,
     });
   } catch (err) {
     next(err);
