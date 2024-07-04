@@ -7,7 +7,7 @@ const authMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     let token: string | undefined = "";
     token = req.cookies.token;

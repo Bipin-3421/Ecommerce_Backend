@@ -17,7 +17,7 @@ const router = express.Router();
 
 router.post("/", authMiddleware, isAdmin, singleUpload, addProducts);
 
-router.get("/", authMiddleware, isAdmin, singleUpload, getProducts);
+router.get("/", authMiddleware, isAdmin, getProducts);
 
 router.get("/filter/price", filterByPriceRange);
 

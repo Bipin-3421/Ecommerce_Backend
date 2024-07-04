@@ -12,8 +12,9 @@ import {
   userLoginSchema,
   userRegisterSchema,
 } from "../validators/authValidator";
-import authMiddleware from "../middlewares/authMiddleware";
+
 import isAdmin from "../middlewares/isAdmin";
+import authMiddleware from "../middlewares/authMiddleware";
 const router = express.Router();
 
 router.get("/", authMiddleware, isAdmin, getAllUsers);

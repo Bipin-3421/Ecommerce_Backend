@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import productService from "../services/product.service";
-import Product, { IProduct } from "../models/product";
+import { IProduct } from "../models/product";
 import ErrorHandler from "../utils/error-utility-class";
-import { TotalProductResponse } from "types/product.response";
+import { TotalProductResponse } from "../types/product.response";
 
 export const addProducts = async (
   req: Request,

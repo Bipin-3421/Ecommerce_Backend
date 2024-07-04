@@ -11,7 +11,7 @@ class AuthService {
       if (!isMatch) throw new ErrorHandler("password not matched", 400);
       return user;
     } catch (err) {
-      throw new ErrorHandler(`err:${err}`, 500);
+      throw new ErrorHandler(`err:${err}`, 404);
     }
   }
   async registerAuthService(

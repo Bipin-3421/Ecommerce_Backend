@@ -97,6 +97,8 @@ class ProductService {
     }
   }
 
+  //output in the field name total
+
   async getTotalProduct(): Promise<number> {
     try {
       const totalProduct = await Product.aggregate([
@@ -111,7 +113,7 @@ class ProductService {
       throw new ErrorHandler(`Err:${err}`, 404);
     }
   }
-  async getProductStock(): Promise<IProduct> {
+  async getProductStock() {
     try {
       const productStock = await Product.aggregate([
         {
